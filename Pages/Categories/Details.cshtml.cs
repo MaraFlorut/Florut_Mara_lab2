@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Lab2.Data;
 using Lab2.Models;
 
-namespace Lab2.Pages.Books
+namespace Lab2.Pages.Categories
 {
     public class DetailsModel : PageModel
     {
@@ -19,8 +19,7 @@ namespace Lab2.Pages.Books
             _context = context;
         }
 
-        public Book Book { get; set; } = default!;
-        public IList<Category> Categories { get; set; } = new List<Category>();
+        public Category Category { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,20 +28,15 @@ namespace Lab2.Pages.Books
                 return NotFound();
             }
 
-            Book = await _context.Book
-                .Include(b => b.Author) 
-                .Include(b => b.Publisher)
-                .Include(b => b.BookCategories)
-                    .ThenInclude(bc => bc.Category)
-                .FirstOrDefaultAsync(m => m.ID == id);
-
-            if (Book == null)
+            var category = await _context.Category.FirstOrDefaultAsync(m => m.ID == id);
+            if (category == null)
             {
                 return NotFound();
             }
-
-            Categories = Book.BookCategories.Select(bc => bc.Category).ToList();
-
+            else
+            {
+                Category = category;
+            }
             return Page();
         }
     }

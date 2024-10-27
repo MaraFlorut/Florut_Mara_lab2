@@ -10,7 +10,7 @@ using Lab2.Models;
 
 namespace Lab2.Pages.Books
 {
-    public class CreateModel : PageModel
+    public class CreateModel : BookCategoriesPageModel
     {
         private readonly Lab2.Data.Lab2Context _context;
 
@@ -31,6 +31,12 @@ namespace Lab2.Pages.Books
             .ToList();
 
             ViewData["AuthorID"] = new SelectList(authors, "AuthorID", "FullName");
+
+            var book = new Book();
+
+            book.BookCategories = new List<BookCategory>();
+            PopulateAssignedCategoryData(_context, book);
+
             return Page();
         }
 
@@ -38,13 +44,28 @@ namespace Lab2.Pages.Books
         public Book Book { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string[] selectedCategories)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
+            var newBook = new Book();
+            if (selectedCategories != null)
+            {
+                newBook.BookCategories = new List<BookCategory>();
+                foreach (var cat in selectedCategories)
+                {
+                    var catToAdd = new BookCategory
+                    {
+                        CategoryID = int.Parse(cat)
+                    };
+                    newBook.BookCategories.Add(catToAdd);
+                }
+            }
+            Book.BookCategories = newBook.BookCategories;
+            
             _context.Book.Add(Book);
             await _context.SaveChangesAsync();
 

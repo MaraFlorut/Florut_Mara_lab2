@@ -21,7 +21,7 @@
             @Html.DisplayNameFor(model => model.Book.Author)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Book.Author)
+            @($"{Model.Book.Author?.FirstName} {Model.Book.Author?.LastName}")
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Book.Price)
@@ -35,8 +35,26 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Book.PublishingDate)
         </dd>
+
+        <dt class="col-sm-2">
+            Categories
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Categories != null && Model.Categories.Count > 0)
+            {
+                foreach (var category in Model.Categories)
+                {
+                    @category.CategoryName <br />
+                }
+            }
+            else
+            {
+                <span>No categories available for this book.</span>
+            }
+        </dd>
     </dl>
 </div>
+
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.Book.ID">Edit</a> |
     <a asp-page="./Index">Back to List</a>
